@@ -1,3 +1,4 @@
+
 $(document).ready(function () {
     $('#dataTable').DataTable({
         ajax: 'data/arrays.txt',
@@ -10,6 +11,9 @@ option.text = "six";
 select.add(option);
 
 
+
+
+//Event Handlers
 document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('submit').addEventListener('click', submitData);
     document.getElementById('logout').addEventListener('click', logout);

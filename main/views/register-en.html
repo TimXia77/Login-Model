@@ -154,9 +154,8 @@
     <main property="mainContentOfPage" class="container" resource="#wb-main" typeof="WebPageElement">
 
         <!-- content -->
-        <div class="mrgn-bttm-lg">
-            <h1>Register</h1>
-        </div>
+
+        <h1 class="mrgn-bttm-lg">Register</h1>
 
         <div class="wb-frmvld">
             <form action="/register" method="post" id="form-validation">
@@ -174,26 +173,14 @@
                             autocomplete="given-name" required="required" data-rule-minlength="2" maxlength="16" data-rule-alphanumeric="true"/>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group mrgn-bttm-lg">
                         <label for="password1" class="required"><span class="field-name">Password</span> (Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters)</label> 
                         <input class="form-control" id="password1" name="password1" type="password"
                             autocomplete="family-name" required="required" data-rule-minlength="2" maxlength="16" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" data-msg="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"/>
                     </div>
 
-                    <button type="submit" class="btn btn-default">Register</button>
-
-                    <!-- <div class="col-sm-offset-1">
-                    <div class="form-group">
-                        <label for="username1" class="required"><span class="field-name">Username</span>     
-                        <input class="form-control" id="username1" name="username1" type="text" autocomplete="given-name" required="required" data-rule-minlength="2" />
-                    </div>
-                    <div class="form-group">
-                        <label for="password1" class="required"><span class="field-name">Password</span> (between 5 and 10 characters)</label> 
-                        <input class="form-control" id="password1" name="password1" type="text" autocomplete="new-password" required="required" maxlength="10" data-rule-rangelength="[5,10]" />
-                    </div>
-                    
-                    <button type="submit" class="btn btn-default">Sign in</button>
-                </div> -->
+                    <button type="submit" class="btn btn-default mrgn-rght-md" id="registerButton">Register</button>
+                    <a href="/login">Log in</a>
             </form>
         </div>
 
@@ -279,7 +266,7 @@
     <script src="https://wet-boew.github.io/themes-dist/GCWeb/wet-boew/js/wet-boew.min.js"></script>
     <script src="https://wet-boew.github.io/themes-dist/GCWeb/GCWeb/js/theme.min.js"></script>
 
-    <script src='/login.js'></script>
+    <script src='/scripts/register.js'></script>
 </body>
 
 </html>
