@@ -8,12 +8,13 @@ const bcrypt = require("bcrypt");
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
 
-const dataLayer = require("./../data.js"); //Layered System
+app.set("view engine", "ejs");
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cookieParser());
-app.use(express.static(__dirname + "/public")); 
+app.use(express.static(__dirname + "/views")); 
 
+const dataLayer = require("./../data.js"); //Layered System
 
 const registerPage = ["/", "/register"];
 
@@ -71,14 +72,19 @@ function createUserToken(userName) {
 
 //Registry Page:
 app.get(registerPage, checkLogin, (req, res) => {
-    res.sendFile(__dirname + '/public/register-en.html');
+    res.render('register-en');
 });
 
 app.post(registerPage, async (req, res) => { //creates basic accounts 
     const dataArr = JSON.parse(`[${dataLayer.readData()}]`); //array with user information
-    const targetUser = dataArr.find(findUser => findUser.username === req.body.username1);
-    if (targetUser) { //user with that username already exists
-        res.send("Username already taken!")
+    const usernameUser = dataArr.find(findUser => findUser.username === req.body.username1);
+    const emailUser = dataArr.find(findUser => findUser.email === req.body.email1);
+    if (usernameUser && emailUser){ //username and email taken
+        res.render('register-en', {msg: '<div class="alert alert-danger"><p>Username and email invalid</p></div>'});
+    } else if (emailUser){ //email taken
+        res.render('register-en', {msg: '<div class="alert alert-danger"><p>Email already taken</p></div>'});
+    } else if (usernameUser) { //user with that username already exists
+        res.render('register-en', {msg: '<div class="alert alert-danger"><p>Username already taken</p></div>'});
 
     } else {
         try {
@@ -102,8 +108,14 @@ app.post(registerPage, async (req, res) => { //creates basic accounts
     }
 });
 
+//Login Page:
 app.get("/login", checkLogin, (req, res) => {
-    res.sendFile(__dirname + '/public/login-en.html');
+    if (Boolean(req.query.logout) == true){
+        console.log("user just logged out");
+        res.render('login-en.ejs', {msg: '<section class="alert alert-success"><p>Logged out successfully</p></section>'});
+    } else {
+        res.render('login-en.ejs');
+    }
 });
 
 app.post("/login", (req, res) => {
@@ -112,7 +124,7 @@ app.post("/login", (req, res) => {
     const targetUser = dataArr.find(user => user.username === req.body.username1);
 
     if (targetUser == null) {
-        return res.status(400).send('Cannot find username')
+        return res.status(400).render('login-en', {msg: '<div class="alert alert-danger"><p>Cannot find username</p></div>'});
     }
 
     //if user found:
@@ -126,7 +138,7 @@ app.post("/login", (req, res) => {
 
             return res.redirect("/table");
         } else {
-            res.send("Invalid Password.")
+            return res.status(400).render('login-en', {msg: '<div class="alert alert-danger"><p>Invalid Password</p></div>'});
         }
     } catch {
         res.status(500).send();
@@ -134,30 +146,16 @@ app.post("/login", (req, res) => {
 
 });
 
-app.post('/logout', (req, res) => {
-    res.send('Logout successful');
-});
-
 
 app.get("/table", cookieJwtAuth, (req, res) => {
-    res.sendFile(__dirname + '/public/table.html');
+    res.render('table.ejs');
 });
 
-app.get("/logout", (req, res) => {
+
+app.post('/logout', (req, res) => {
     res.clearCookie("token");
-    res.redirect("/login");
-})
-
-app.get("/adminPage", cookieJwtAuth, authRole("admin"), (req, res) => {
-    res.send("You are admin user: " + req.user.username);
-    //res.sendFile(__dirname + '/public/table.html');
+    res.redirect("/login?logout=true");
 });
-
-app.get("/basicPage", cookieJwtAuth, authRole("basic"), (req, res) => {
-    res.send("You are basic user: " + req.user.username);
-    //res.sendFile(__dirname + '/public/table.html');
-});
-
 
 
 app.listen(PORT, () => {

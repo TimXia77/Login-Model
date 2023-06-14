@@ -1,14 +1,5 @@
 
 // function login(){
-//     console.log("heelo"); 
-
-//     //LEAVE FORM ACTION IN AND SEE IF YOU CAN ASK THE SERVER FOR VALIDITY??
-    
-//     //EJS TO LOAD IN ERR MSG?
-
-
-
-
 
 //     let reqObj = {
 //         username1: document.getElementById('username1').value,

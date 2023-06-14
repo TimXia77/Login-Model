@@ -5,7 +5,7 @@
     <meta charset="utf-8">
     <!-- Web Experience Toolkit (WET) / Boîte à outils de l'expérience Web (BOEW)
 		wet-boew.github.io/wet-boew/License-en.html / wet-boew.github.io/wet-boew/Licence-fr.html -->
-    <title>WET-Login-EN</title>
+    <title>WET-Register-EN</title>
     <meta content="width=device-width, initial-scale=1" name="viewport">
     <meta name="description" content=" " />
     <link href="https://wet-boew.github.io/themes-dist/GCWeb/GCWeb/assets/favicon.ico" rel="icon" type="image/x-icon" />
@@ -154,28 +154,33 @@
     <main property="mainContentOfPage" class="container" resource="#wb-main" typeof="WebPageElement">
 
         <!-- content -->
-        <div class="mrgn-bttm-lg">
-            <h1>Login</h1>
-        </div>
+
+        <h1 class="mrgn-bttm-lg">Register</h1> <%- locals.msg %>
 
         <div class="wb-frmvld">
-            <form action="/login" method="post" id="form-validation">
+            <form action="/register" method="post" id="form-validation">
 
                 <div class="form-group">
+
+                    <div class="form-group">
+                        <label for="email1" class="required"><span class="field-name">Email address</span> (yourname@domain.com)</label>
+                        <input class="form-control" id="email1" name="email1" type="email" autocomplete="email" required="required"/>
+                    </div>
+
                     <div class="form-group">
                         <label for="username1" class="required"><span class="field-name">Username</span></label>
                         <input class="form-control" id="username1" name="username1" type="text"
-                            autocomplete="given-name" required="required" maxlength="16"/>
+                            autocomplete="given-name" required="required" data-rule-minlength="2" maxlength="16" data-rule-alphanumeric="true"/>
                     </div>
 
-                    <div class="form-group">
+                    <div class="form-group mrgn-bttm-lg">
                         <label for="password1" class="required"><span class="field-name">Password</span> (Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters)</label> 
                         <input class="form-control" id="password1" name="password1" type="password"
-                            autocomplete="family-name" required="required" maxlength="16"/>
+                            autocomplete="family-name" required="required" data-rule-minlength="2" maxlength="16" pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}" data-msg="Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters"/>
                     </div>
 
-                    <button type="submit" class="btn btn-default mrgn-rght-md">Log In</button>
-                    <a href="/register">Register now</a>
+                    <button type="submit" class="btn btn-default mrgn-rght-md" id="registerButton">Register</button>
+                    <a href="/login">Log in</a>
             </form>
         </div>
 
@@ -261,7 +266,7 @@
     <script src="https://wet-boew.github.io/themes-dist/GCWeb/wet-boew/js/wet-boew.min.js"></script>
     <script src="https://wet-boew.github.io/themes-dist/GCWeb/GCWeb/js/theme.min.js"></script>
 
-    <script src='/scripts/login.js'></script>
+    <script src='/scripts/register.js'></script>
 </body>
 
 </html>
