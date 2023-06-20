@@ -37,8 +37,19 @@ function writeData(dataString){
     });
 }
 
+function clearData(){
+    fs.writeFile("../accounts.txt", '', err => {
+        if (err){
+            console.error(err);
+            console.log("error occured when clearing login textfile");
+            return;
+        }
+    });
+}
+
 module.exports = {
     addData,
     readData,
-    writeData
+    writeData,
+    clearData
 };
