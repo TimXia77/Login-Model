@@ -22,6 +22,7 @@ const dataLayer = require("./../data.js");
 
 //Helper Modules
 const authHelper = require("./authHelper.js")(app);
+const cache = require("./cache.js");
 
 //Constants (for readability)
 const registerPage = ["/", "/register"];
@@ -31,7 +32,7 @@ const PORT = 3000;
 //Routes
 
 //Registry Page:
-app.get(registerPage, authHelper.checkLogin, (req, res) => {
+app.get(registerPage, authHelper.checkLogin, cache(5), (req, res) => {
     res.render('register-en');
 });
 
@@ -71,7 +72,7 @@ app.post(registerPage, async (req, res) => {
 });
 
 //Login Page:
-app.get("/login", authHelper.checkLogin, (req, res) => {
+app.get("/login", authHelper.checkLogin, cache(5), (req, res) => {
     if (Boolean(req.query.logout) == true){ //If the user just logged out
         res.render('login-en.ejs', {msg: '<section class="alert alert-success"><p>Logged out successfully</p></section>'});
     } else {
@@ -118,7 +119,7 @@ app.post('/logout', (req, res) => {
 
 
 //Data page
-app.get("/table", authHelper.cookieJwtAuth, (req, res) => {
+app.get("/table", authHelper.cookieJwtAuth, cache(5), (req, res) => { 
     res.render('table.ejs');
 });
 

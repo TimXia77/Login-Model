@@ -1,1 +1,1 @@
-{"email":"timxia@gmail.com","username":"TimXia77","password":"$2b$10$Vz4vkEimNs1L2DUbkvyfUeh3aBhLWazAYbDF.wVbsQi/1uqZ22q6y","role":"basic"}
+{"email":"timxia@gmail.com","username":"TimXia77","password":"$2b$10$Vz4vkEimNs1L2DUbkvyfUeh3aBhLWazAYbDF.wVbsQi/1uqZ22q6y","role":"basic"}, {"email":"timxia123@gmail.com","username":"TimXia123","password":"$2b$10$FQdZImRS2qpGMAX4NIDjn.4.F4hsbiyL9Sqxfhx/R3.XyDbGnphji","role":"basic"}
