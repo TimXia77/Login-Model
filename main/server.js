@@ -32,7 +32,7 @@ const PORT = 3000;
 //Routes
 
 //Registry Page:
-app.get(registerPage, authHelper.checkLogin, cache(5), (req, res) => {
+app.get(registerPage, authHelper.checkLogin, cache(15), (req, res) => {
     res.render('register-en');
 });
 
@@ -61,10 +61,10 @@ app.post(registerPage, async (req, res) => {
 
             //logging user in:
             const token = authHelper.createUserToken(req.body.username1);
-
+            //console.log("Print token from server: " + token);
             res.cookie("token", token);
 
-            res.status(302).redirect('/table');
+            res.status(200).redirect('/table');
         } catch {
             res.status(500).send("Error Registering!");
         }
@@ -72,7 +72,7 @@ app.post(registerPage, async (req, res) => {
 });
 
 //Login Page:
-app.get("/login", authHelper.checkLogin, cache(5), (req, res) => {
+app.get("/login", authHelper.checkLogin, cache(15), (req, res) => {
     if (Boolean(req.query.logout) == true){ //If the user just logged out
         res.render('login-en.ejs', {msg: '<section class="alert alert-success"><p>Logged out successfully</p></section>'});
     } else {
@@ -113,13 +113,14 @@ app.post("/login", (req, res) => {
 
 //Logout
 app.post('/logout', (req, res) => {
+    //console.log("req.cookies: " + JSON.stringify(req.cookies.token));
     res.clearCookie("token");
     res.redirect("/login?logout=true");
 });
 
 
 //Data page
-app.get("/table", authHelper.cookieJwtAuth, cache(5), (req, res) => { 
+app.get("/table", authHelper.cookieJwtAuth, cache(15), (req, res) => { 
     res.render('table.ejs');
 });
 
