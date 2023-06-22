@@ -2,8 +2,8 @@
 //Requires:
 const chai = require('chai');
 const chaiHttp = require('chai-http');
-const app = require("../server");
 const supertest = require('supertest'); //limitations with chai-http -> redirects automatically 
+const app = require("../server");
 const cookieParser = require("cookie-parser");
 
 //Data access layer (to clear login data before testing) 
@@ -17,9 +17,10 @@ app.use(cookieParser());
 var loginCookie; //transports cookie string between tests
 var redirectUrl; //transports redirected urls between tests
 
-describe('Login and Register:\n', () => {
-    dataLayer.clearData();
 
+describe('Login and Register:\n', () => {
+    dataLayer.deleteUser('TestUsernameTest');
+    
     describe('Successful Requests', () => {
         describe('GET /register', () => {
             it('Should render the register-en page (html) successfully', (done) => {
@@ -51,7 +52,7 @@ describe('Login and Register:\n', () => {
             it('Successfully registered account (should return 302)', (done) => {
                 supertest(app)
                     .post('/register')
-                    .send({ email1: 'timxia@gmail.com', username1: 'TimXia77', password1: '123abcDEF' })
+                    .send({ email1: 'TestTest@test.test', username1: 'TestUsernameTest', password1: '123abcDEF' })
                     .expect(302)
                     .expect('set-cookie', /token=/)
                     .end((err, res) => {
@@ -79,7 +80,7 @@ describe('Login and Register:\n', () => {
             it('Successfully logged in to account (should return 302)', (done) => {
                 supertest(app)
                     .post('/login')
-                    .send({ username1: 'TimXia77', password1: '123abcDEF' })
+                    .send({ username1: 'TestUsernameTest', password1: '123abcDEF' })
                     .expect(302)
                     .expect('set-cookie', /token=/)
                     .end((err, res) => {
@@ -134,7 +135,7 @@ describe('Login and Register:\n', () => {
                 chai
                     .request(app)
                     .post('/register')
-                    .send({ email1: 'timxiaa@gmail.com', username1: 'TimXia77', password1: '123abcDEF' })
+                    .send({ email1: 'timxiaa@gmail.com', username1: 'TestUsernameTest', password1: '123abcDEF' })
                     .end((err, res) => {
                         expect(res).to.have.status(401);
                         expect(res).to.be.html;
@@ -146,7 +147,7 @@ describe('Login and Register:\n', () => {
                 chai
                     .request(app)
                     .post('/register')
-                    .send({ email1: 'timxia@gmail.com', username1: 'TimXia777', password1: '123abcDEF' })
+                    .send({ email1: 'TestTest@test.test', username1: 'TimXia77', password1: '123abcDEF' })
                     .end((err, res) => {
                         expect(res).to.have.status(401);
                         expect(res).to.be.html;
@@ -158,7 +159,7 @@ describe('Login and Register:\n', () => {
                 chai
                     .request(app)
                     .post('/register')
-                    .send({ email1: 'timxia@gmail.com', username1: 'TimXia77', password1: '123abcDEF' })
+                    .send({ email1: 'TestTest@test.test', username1: 'TestUsernameTest', password1: '123abcDEF' })
                     .end((err, res) => {
                         expect(res).to.have.status(401);
                         expect(res).to.be.html;
@@ -168,11 +169,11 @@ describe('Login and Register:\n', () => {
             });
         });
         describe('POST /login', () => {
-            it('Tried to register with invalid username (should return 401)', (done) => {
+            it('Tried to login with invalid username (should return 401)', (done) => {
                 chai
                     .request(app)
                     .post('/login')
-                    .send({ username1: 'TimXia123', password1: '123abcDEF' })
+                    .send({ username1: 'TestUsernameTestUsernameTest', password1: '123abcDEF' })
                     .end((err, res) => {
                         expect(res).to.have.status(401);
                         expect(res).to.be.html;
@@ -184,7 +185,7 @@ describe('Login and Register:\n', () => {
                 chai
                     .request(app)
                     .post('/login')
-                    .send({ username1: 'TimXia77', password1: 'badPassword' })
+                    .send({ username1: 'TestUsernameTest', password1: 'badPassword' })
                     .end((err, res) => {
                         expect(res).to.have.status(401);
                         expect(res).to.be.html;
