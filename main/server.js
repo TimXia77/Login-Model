@@ -113,9 +113,12 @@ app.post("/login", (req, res) => {
 
 //Logout
 app.post('/logout', (req, res) => {
-    //console.log("req.cookies: " + JSON.stringify(req.cookies.token));
-    res.clearCookie("token");
-    res.redirect("/login?logout=true");
+    if (req.cookies.token){
+        res.clearCookie("token");
+        res.status(302).redirect("/login?logout=true");
+    } else {
+        res.status(405).send("Invalid JWT");
+    }
 });
 
 
