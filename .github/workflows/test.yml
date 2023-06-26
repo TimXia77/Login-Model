@@ -18,11 +18,11 @@ jobs:
               with:
                   node-version: 14
 
-            - name: Install dependencies
-              run: npm i
-
             - name: Go to correct directory
               run: cd main
+
+            - name: Install dependencies
+              run: npm i
 
             - name: Run tests
               run: npm run test
