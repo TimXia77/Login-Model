@@ -20,6 +20,9 @@ jobs:
 
             - name: Go to correct directory
               run: cd main
+              
+            - name: Check Directory
+              run: ls
 
             - name: Install dependencies
               run: npm i
