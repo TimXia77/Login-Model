@@ -20,7 +20,8 @@ var redirectUrl; //transports redirected urls between tests
 
 describe('Login and Register:\n', () => {
     dataLayer.deleteUser('TestUsernameTest');
-    
+
+
     describe('Successful Requests', () => {
         describe('GET /register', () => {
             it('Should render the register-en page (html) successfully', (done) => {
