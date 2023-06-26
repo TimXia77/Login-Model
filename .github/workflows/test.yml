@@ -18,14 +18,10 @@ jobs:
               with:
                   node-version: 14
 
-            - name: Go to correct directory
-              run: cd main
-              
-            - name: Check Directory
-              run: ls
-
             - name: Install dependencies
               run: npm i
+              working-directory: ./main
 
             - name: Run tests
               run: npm run test
+              working-directory: ./main
