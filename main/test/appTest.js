@@ -30,7 +30,7 @@ describe('Login and Register:\n', () => {
                         expect(res).to.have.status(200);
                         expect(res).to.be.html;
                         expect(res.text).to.include('<h1 class="mrgn-bttm-lg">Register</h1>');
-                        expect(res.text).to.include('(Must contain at least one number and one uppercase and lowercase letter, and at least 8 or more characters)');
+                        expect(res.text).to.include('Must contain at least one number, one uppercase letter, one lowercase letter, and at least 8 or more characters');
                         done();
                     });
             });
@@ -147,7 +147,7 @@ describe('Login and Register:\n', () => {
                 chai
                     .request(app)
                     .post('/register')
-                    .send({ email1: 'TestTest@test.test', username1: 'TimXia77', password1: '123abcDEF' })
+                    .send({ email1: 'TestTest@test.test', username1: 'TimXia7777', password1: '123abcDEF' })
                     .end((err, res) => {
                         expect(res).to.have.status(401);
                         expect(res).to.be.html;
