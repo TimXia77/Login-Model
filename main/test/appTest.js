@@ -131,7 +131,34 @@ describe('Login and Register:\n', () => {
         });
     });
     describe('Unsuccessful Requests', () => {
+        describe('POST /login', () => {
+            it('Tried to login with invalid username (should return 401)', (done) => {
+                chai
+                    .request(app)
+                    .post('/login')
+                    .send({ username1: 'TestUsernameTestUsernameTest', password1: '123abcDEF' })
+                    .end((err, res) => {
+                        expect(res).to.have.status(401);
+                        expect(res).to.be.html;
+                        expect(res.text).to.include('<div class="alert alert-danger"><p>Cannot find username</p></div>');
+                        done();
+                    });
+            });
+            it('Tried to register with invalid password (should return 401)', (done) => {
+                chai
+                    .request(app)
+                    .post('/login')
+                    .send({ username1: 'TestUsernameTest', password1: 'badPassword' })
+                    .end((err, res) => {
+                        expect(res).to.have.status(401);
+                        expect(res).to.be.html;
+                        expect(res.text).to.include('<div class="alert alert-danger"><p>Invalid Password</p></div>');
+                        done();
+                    });
+            });
+        });
         describe('POST /register', () => {
+            //taken usernames and emails
             it('Tried to register with taken username (should return 401)', (done) => {
                 chai
                     .request(app)
@@ -164,35 +191,130 @@ describe('Login and Register:\n', () => {
                     .end((err, res) => {
                         expect(res).to.have.status(401);
                         expect(res).to.be.html;
-                        expect(res.text).to.include('<div class="alert alert-danger"><p>Username and email invalid</p></div>');
+                        expect(res.text).to.include('<div class="alert alert-danger"><p>Username and email taken</p></div>');
                         done();
                     });
             });
-        });
-        describe('POST /login', () => {
-            it('Tried to login with invalid username (should return 401)', (done) => {
-                chai
-                    .request(app)
-                    .post('/login')
-                    .send({ username1: 'TestUsernameTestUsernameTest', password1: '123abcDEF' })
-                    .end((err, res) => {
-                        expect(res).to.have.status(401);
-                        expect(res).to.be.html;
-                        expect(res.text).to.include('<div class="alert alert-danger"><p>Cannot find username</p></div>');
-                        done();
+
+            //invalid parameter formats
+            describe('Registering with invalid formats', () => {
+                beforeEach(() => {
+                    dataLayer.deleteUser('TestUsernameTest');
+                });
+                describe('Registering with invalid password formats', () => {
+                    it('Error when missing a number', (done) => {
+                        chai
+                            .request(app)
+                            .post('/register')
+                            .send({ email1: 'TestTest@test.test', username1: 'TestUsernameTest', password1: 'password' })
+                            .end((err, res) => {
+                                expect(res).to.have.status(400);
+                                expect(res).to.be.html;
+                                expect(res.text).to.include('<div class="alert alert-danger"><p>Invalid format for password</p></div>');
+                                done();
+                            });
                     });
-            });
-            it('Tried to register with invalid password (should return 401)', (done) => {
-                chai
-                    .request(app)
-                    .post('/login')
-                    .send({ username1: 'TestUsernameTest', password1: 'badPassword' })
-                    .end((err, res) => {
-                        expect(res).to.have.status(401);
-                        expect(res).to.be.html;
-                        expect(res.text).to.include('<div class="alert alert-danger"><p>Invalid Password</p></div>');
-                        done();
+                    it('Error when missing an uppercase letter', (done) => {
+                        chai
+                            .request(app)
+                            .post('/register')
+                            .send({ email1: 'TestTest@test.test', username1: 'TestUsernameTest', password1: 'password123' })
+                            .end((err, res) => {
+                                expect(res).to.have.status(400);
+                                expect(res).to.be.html;
+                                expect(res.text).to.include('<div class="alert alert-danger"><p>Invalid format for password</p></div>');
+                                done();
+                            });
                     });
+                    it('Error when missing an lowercase letter', (done) => {
+                        chai
+                            .request(app)
+                            .post('/register')
+                            .send({ email1: 'TestTest@test.test', username1: 'TestUsernameTest', password1: 'PASSWORD123' })
+                            .end((err, res) => {
+                                expect(res).to.have.status(400);
+                                expect(res).to.be.html;
+                                expect(res.text).to.include('<div class="alert alert-danger"><p>Invalid format for password</p></div>');
+                                done();
+                            });
+                    });
+                    it('Error when missing an password is shorter than 8 characters', (done) => {
+                        chai
+                            .request(app)
+                            .post('/register')
+                            .send({ email1: 'TestTest@test.test', username1: 'TestUsernameTest', password1: 'Pass123' })
+                            .end((err, res) => {
+                                expect(res).to.have.status(400);
+                                expect(res).to.be.html;
+                                expect(res.text).to.include('<div class="alert alert-danger"><p>Invalid format for password</p></div>');
+                                done();
+                            });
+                    });
+                });
+                describe('Registering with invalid username format', () => {
+                    it('Error when username is shorter than 2 characters', (done) => {
+                        chai
+                            .request(app)
+                            .post('/register')
+                            .send({ email1: 'TestTest@test.test', username1: 'H', password1: '123abcDEF' })
+                            .end((err, res) => {
+                                expect(res).to.have.status(400);
+                                expect(res).to.be.html;
+                                expect(res.text).to.include('<div class="alert alert-danger"><p>Invalid format for username</p></div>');
+                                done();
+                            });
+                    });
+                    it('1. Error when username contains non-numerical and non-underscore characters ', (done) => {
+                        chai
+                            .request(app)
+                            .post('/register')
+                            .send({ email1: 'TestTest@test.test', username1: 'username!@#$%^&*()', password1: '123abcDEF' })
+                            .end((err, res) => {
+                                expect(res).to.have.status(400);
+                                expect(res).to.be.html;
+                                expect(res.text).to.include('<div class="alert alert-danger"><p>Invalid format for username</p></div>');
+                                done();
+                            });
+                    });
+                    it('2. Error when username contains non-numerical and non-underscore characters ', (done) => {
+                        chai
+                            .request(app)
+                            .post('/register')
+                            .send({ email1: 'TestTest@test.test', username1: 'Hi`~{}|:"', password1: '123abcDEF' })
+                            .end((err, res) => {
+                                expect(res).to.have.status(400);
+                                expect(res).to.be.html;
+                                expect(res.text).to.include('<div class="alert alert-danger"><p>Invalid format for username</p></div>');
+                                done();
+                            });
+                    });
+                    it('3. Error when username contains non-numerical and non-underscore characters ', (done) => {
+                        chai
+                            .request(app)
+                            .post('/register')
+                            .send({ email1: 'TestTest@test.test', username1: 'Hi<>?,./>', password1: '123abcDEF' })
+                            .end((err, res) => {
+                                expect(res).to.have.status(400);
+                                expect(res).to.be.html;
+                                expect(res.text).to.include('<div class="alert alert-danger"><p>Invalid format for username</p></div>');
+                                done();
+                            });
+                    });
+                });
+                describe('Registering with invalid email format', () => {
+                    it('Error when missing an @ sign', (done) => {
+                        chai
+                            .request(app)
+                            .post('/register')
+                            .send({ email1: 'notAValidEmail', username1: 'someUsername', password1: '123abcDEF' })
+                            .end((err, res) => {
+                                expect(res).to.have.status(400);
+                                expect(res).to.be.html;
+                                expect(res.text).to.include('<div class="alert alert-danger"><p>Invalid format for email</p></div>');
+                                done();
+                            });
+                    });
+                });
             });
         });
     });

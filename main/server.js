@@ -37,19 +37,30 @@ app.get(registerPage, authHelper.checkLogin, cache(15), (req, res) => {
 });
 
 app.post(registerPage, async (req, res) => { 
+    if (!((req.body.email1).includes("@"))) {        //Check if username, password, and email pass restrictions
+        return res.status(400).render('register-en', {msg: '<div class="alert alert-danger"><p>Invalid format for email</p></div>'});
+        
+    } else if (!(/^[a-zA-Z0-9_]{2,}$/.test(req.body.username1))) {
+        return res.status(400).render('register-en', {msg: '<div class="alert alert-danger"><p>Invalid format for username</p></div>'});
+        
+    } else if (!(/[0-9]/.test(req.body.password1) && /[A-Z]/.test(req.body.password1) && /[a-z]/.test(req.body.password1) && (req.body.password1).length >= 8)) {
+        return res.status(400).render('register-en', {msg: '<div class="alert alert-danger"><p>Invalid format for password</p></div>'});
+
+    }
+
     const dataArr = JSON.parse(`[${dataLayer.readData()}]`); //array with user information
 
     const usernameUser = dataArr.find(findUser => findUser.username === req.body.username1); //variables to determine if an account already exists.
     const emailUser = dataArr.find(findUser => findUser.email === req.body.email1);
 
     if (usernameUser && emailUser){     //username and email taken
-        res.status(401).render('register-en', {msg: '<div class="alert alert-danger"><p>Username and email invalid</p></div>'});
+        return res.status(401).render('register-en', {msg: '<div class="alert alert-danger"><p>Username and email taken</p></div>'});
         
     } else if (emailUser){              //email taken
-        res.status(401).render('register-en', {msg: '<div class="alert alert-danger"><p>Email already taken</p></div>'});
+        return res.status(401).render('register-en', {msg: '<div class="alert alert-danger"><p>Email already taken</p></div>'});
 
     } else if (usernameUser) {          //user with that username already exists
-        res.status(401).render('register-en', {msg: '<div class="alert alert-danger"><p>Username already taken</p></div>'});
+        return res.status(401).render('register-en', {msg: '<div class="alert alert-danger"><p>Username already taken</p></div>'});
 
     } else {
         try {   //valid information! Creating account

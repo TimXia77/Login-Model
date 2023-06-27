@@ -1,1 +1,0 @@
-{"email":"timxia@gmail.com","username":"TimXia77","password":"$2b$10$TmEa1mgvYzMc2GGMOrB00.1PYFn/y85q1grqXCwjboenczjCuyxGi","role":"basic"}, {"email":"TestTest@test.test","username":"TestUsernameTest","password":"$2b$10$26rI6A/EsFWWC/MCENArO.Qom.52zuf7NstmXTPNdGT5lEBvBtKxm","role":"basic"}
