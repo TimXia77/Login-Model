@@ -23,6 +23,9 @@ jobs:
               run: npm i
               working-directory: ./main
 
+            - name: Install dependencies for data access layer
+                run: npm i
+
             - name: Run tests
               run: npm run test
               working-directory: ./main
