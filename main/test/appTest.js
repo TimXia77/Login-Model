@@ -273,18 +273,6 @@ describe('Login and Register:\n', () => {
                                 done();
                             });
                     });
-                    it('Error when username is equal to "newUserTest"', (done) => {
-                        chai
-                            .request(app)
-                            .post('/register')
-                            .send({ email: 'TestTest@test.test', username: newUserTest, password: 'existUser123' })
-                            .end((err, res) => {
-                                expect(res).to.have.status(400);
-                                expect(res).to.be.html;
-                                expect(res.text).to.include('<div class="alert alert-danger"><p>Please choose another username</p></div>');
-                                done();
-                            });
-                    });
                     it('1. Error when username contains non-numerical and non-underscore characters ', (done) => {
                         chai
                             .request(app)
@@ -322,7 +310,7 @@ describe('Login and Register:\n', () => {
                             });
                     });
                 });
-                describe('Registering with invalid email format then registering with correct', () => {
+                describe('Registering with invalid email formats then registering with correct', () => {
                     it('Error when missing an @ sign', (done) => {
                         chai
                             .request(app)

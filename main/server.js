@@ -36,7 +36,8 @@ const swaggerDocument = YAML.load('./apiSpecification.yaml');
 const existingEmail = 'TestTest@test.test';
 const existingUsername = 'existUserTest';
 
-const newUsername = 'newUserTest';   
+const newEmail = "TestExisting@test.test"
+const newUsername = 'newUserTest';
 
 const swaggerOptions = {
     swaggerDefinition: swaggerDocument,
@@ -46,6 +47,8 @@ const swaggerOptions = {
 const swaggerSpec = swaggerJSDoc(swaggerOptions);
 
 app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec)); //http://localhost:3000/api-docs
+
+dataLayer.deleteUser('newUserTest');
 
 //Routes
 
@@ -64,8 +67,6 @@ app.post(registerPage, async (req, res) => {
     } else if (!(/[0-9]/.test(req.body.password) && /[A-Z]/.test(req.body.password) && /[a-z]/.test(req.body.password) && (req.body.password).length >= 8)) {
         return res.status(400).render('register-en', { msg: '<div class="alert alert-danger"><p>Invalid format for password</p></div>' });
 
-    } else if (newUsername == req.body.username){   //username for testing cannot be taken
-        return res.status(400).render('register-en', { msg: '<div class="alert alert-danger"><p>Please choose another username</p></div>' });
     }
 
     const dataArr = dataLayer.readUsers(); //array with user information
@@ -93,6 +94,7 @@ app.post(registerPage, async (req, res) => {
             res.cookie("token", token);
 
             res.status(200).redirect('/table');
+
         } catch {
             res.status(500).send("Error Registering!");
         }
@@ -110,13 +112,13 @@ app.get("/login", authHelper.checkLogin, cache(15), (req, res) => {
 
 app.post("/login", (req, res) => {
 
-    if (dataLayer.findUser(req.body.username, req.body.password)){
+    if (dataLayer.findUser(req.body.username, req.body.password)) {
         try {
             const token = authHelper.createUserToken(req.body.username);
             res.cookie("token", token);
-    
+
             return res.redirect("/table"); //status 200
-            
+
         } catch {
             res.status(500).send();
         }
@@ -149,7 +151,7 @@ app.listen(PORT, () => {
     console.log(`http://localhost:${PORT}/register`);
     console.log(`http://localhost:${PORT}/login`);
     console.log(`http://localhost:${PORT}/table`);
-    console.log("\nOr check out the specification:") 
+    console.log("\nOr check out the specification:")
     console.log(`http://localhost:3000/api-docs`);
 });
 

@@ -1,1 +1,1 @@
-{"email":"TestTest@test.test","username":"existUserTest","password":"$2b$10$w8YnpRaGNQnJUXvjhyvUV./xexGNA7uBZ.PZ0wTI3EY0h2zpFudq6","role":"basic"}
+{"email":"TestTest@test.test","username":"existUserTest","password":"$2b$10$UlNIGorWsFPNfaeWibtDQ.HgCVG1zVWn5ZGjmpSMUoCb.sGiC7kBq","role":"basic"}, {"email":"TestExisting@test.test","username":"newUserTest","password":"$2b$10$VnOuMrTgAviZhD8EASlWZuq6BxQuu6L772VJzPknU89bitskMy5Eu","role":"basic"}

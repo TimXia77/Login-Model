@@ -39,25 +39,30 @@ paths:
       responses:
         '200':
           description: Loaded page successfully
-    post: 
+    post:
       tags:
         - authentication
       summary: Login request
       description: Sends a request to login. To successfully login, an account with a matching username and password must be entered.
       requestBody:
         content:
-          application/json:    
-            schema:             
-              $ref:
-            examples:    
-              Logging in to existing account (302):   
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+            examples:
+              Existing account (200):
                 value:
                   username: existUserTest
                   password: existUser123
-              Logging in to non-existing account (401):
+              Non-existing account (401):
                 value:
-                  username: badUser
-                  password: badPass123
+                  username: newUserTest
+                  password: newPass123
       responses:
         '200':
           description: User request contained a username and password of an existing account.
@@ -129,28 +134,33 @@ paths:
         Usernames and emails must be unqiue. Passwords don't have to be unique.
         
       requestBody:
-        required: true
         content:
           application/json:
-            schema: 
+            schema:
               type: object
               properties:
-                email:
-                  type: string
                 username:
                   type: string
                 password:
                   type: string
-              example:
-                email: newEmail@email.com
-                username: newUser
-                password: goodPass123
-              required:
-                - email
-                - username
-                - password
+            examples:
+              Unique information (200):
+                value:
+                  email: TestExisting@test.test
+                  username: newUserTest
+                  password: newUser123
+              Information that violates data restrictions (400):
+                value:
+                  email: notAnEmail
+                  username: 1
+                  password: pass
+              Information that belongs to another account (401):
+                value:
+                  email: TestTest@test.test
+                  username: existUserTest
+                  password: Password123
       responses:
-        '302':
+        '200':
           description: User requested to create a new account that satisfied the requirements with a unique email and username.
           content:
             application/json:
@@ -188,7 +198,7 @@ paths:
                     type: string
                     description: The user name.
                     example: passWithNoNumber
-        '401': #FINISH ME!
+        '401': 
           description: Bad request (e.g. taken username or password)
           content:
             application/json:
