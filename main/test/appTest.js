@@ -14,13 +14,20 @@ const { expect } = chai;
 chai.use(chaiHttp);
 app.use(cookieParser());
 
+//constants
+const existUserTest = 'existUserTest';  //should always exist
+const newUserTest = 'newUserTest';      //should never exist
+
 var loginCookie; //transports cookie string between tests
 var redirectUrl; //transports redirected urls between tests
 
 
 describe('Login and Register:\n', () => {
-    dataLayer.deleteUser('TestUsernameTest');
-
+    dataLayer.deleteUser('existUserTest');
+    // after(() => {
+    //     await (dataLayer.addUser('TestTest@test.test', 'existUserTest', 'existUser123')); 
+    //     console.log("HERE");
+    // });
 
     describe('Successful Requests', () => {
         describe('GET /register', () => {
@@ -53,7 +60,7 @@ describe('Login and Register:\n', () => {
             it('Successfully registered account (should return 302)', (done) => {
                 supertest(app)
                     .post('/register')
-                    .send({ email: 'TestTest@test.test', username: 'TestUsernameTest', password: '123abcDEF' })
+                    .send({ email: 'TestTest@test.test', username: existUserTest, password: 'existUser123' })
                     .expect(302)
                     .expect('set-cookie', /token=/)
                     .end((err, res) => {
@@ -81,7 +88,7 @@ describe('Login and Register:\n', () => {
             it('Successfully logged in to account (should return 302)', (done) => {
                 supertest(app)
                     .post('/login')
-                    .send({ username: 'TestUsernameTest', password: '123abcDEF' })
+                    .send({ username: existUserTest, password: 'existUser123' })
                     .expect(302)
                     .expect('set-cookie', /token=/)
                     .end((err, res) => {
@@ -136,7 +143,7 @@ describe('Login and Register:\n', () => {
                 chai
                     .request(app)
                     .post('/login')
-                    .send({ username: 'TestUsernameTestUsernameTest', password: '123abcDEF' })
+                    .send({ username: newUserTest, password: '123abcDEF' })
                     .end((err, res) => {
                         expect(res).to.have.status(401);
                         expect(res).to.be.html;
@@ -148,7 +155,7 @@ describe('Login and Register:\n', () => {
                 chai
                     .request(app)
                     .post('/login')
-                    .send({ username: 'TestUsernameTest', password: 'badPassword' })
+                    .send({ username: existUserTest, password: 'badUser123' })
                     .end((err, res) => {
                         expect(res).to.have.status(401);
                         expect(res).to.be.html;
@@ -164,7 +171,7 @@ describe('Login and Register:\n', () => {
                     chai
                         .request(app)
                         .post('/register')
-                        .send({ email: 'timxiaa@gmail.com', username: 'TestUsernameTest', password: '123abcDEF' })
+                        .send({ email: 'timxiaa@gmail.com', username: existUserTest, password: 'existUser123' })
                         .end((err, res) => {
                             expect(res).to.have.status(401);
                             expect(res).to.be.html;
@@ -176,7 +183,7 @@ describe('Login and Register:\n', () => {
                     chai
                         .request(app)
                         .post('/register')
-                        .send({ email: 'TestTest@test.test', username: 'TimXia7777', password: '123abcDEF' })
+                        .send({ email: 'TestTest@test.test', username: 'TimXia7777', password: 'existUser123' })
                         .end((err, res) => {
                             expect(res).to.have.status(401);
                             expect(res).to.be.html;
@@ -188,7 +195,7 @@ describe('Login and Register:\n', () => {
                     chai
                         .request(app)
                         .post('/register')
-                        .send({ email: 'TestTest@test.test', username: 'TestUsernameTest', password: '123abcDEF' })
+                        .send({ email: 'TestTest@test.test', username: existUserTest, password: 'existUser123' })
                         .end((err, res) => {
                             expect(res).to.have.status(401);
                             expect(res).to.be.html;
@@ -201,17 +208,14 @@ describe('Login and Register:\n', () => {
             //invalid parameter formats
             describe('Registering with invalid formats', () => {
                 beforeEach(() => {
-                    dataLayer.deleteUser('TestUsernameTest');
+                    dataLayer.deleteUser('existUserTest');
                 });
-                // after(() => {
-                //     dataLayer
-                // });
                 describe('Registering with invalid password formats', () => {
                     it('Error when missing a number', (done) => {
                         chai
                             .request(app)
                             .post('/register')
-                            .send({ email: 'TestTest@test.test', username: 'TestUsernameTest', password: 'password' })
+                            .send({ email: 'TestTest@test.test', username: existUserTest, password: 'password' })
                             .end((err, res) => {
                                 expect(res).to.have.status(400);
                                 expect(res).to.be.html;
@@ -223,7 +227,7 @@ describe('Login and Register:\n', () => {
                         chai
                             .request(app)
                             .post('/register')
-                            .send({ email: 'TestTest@test.test', username: 'TestUsernameTest', password: 'password23' })
+                            .send({ email: 'TestTest@test.test', username: existUserTest, password: 'password123' })
                             .end((err, res) => {
                                 expect(res).to.have.status(400);
                                 expect(res).to.be.html;
@@ -235,7 +239,7 @@ describe('Login and Register:\n', () => {
                         chai
                             .request(app)
                             .post('/register')
-                            .send({ email: 'TestTest@test.test', username: 'TestUsernameTest', password: 'password23' })
+                            .send({ email: 'TestTest@test.test', username: existUserTest, password: 'PASSWORD123' })
                             .end((err, res) => {
                                 expect(res).to.have.status(400);
                                 expect(res).to.be.html;
@@ -247,7 +251,7 @@ describe('Login and Register:\n', () => {
                         chai
                             .request(app)
                             .post('/register')
-                            .send({ email: 'TestTest@test.test', username: 'TestUsernameTest', password: 'Pass123' })
+                            .send({ email: 'TestTest@test.test', username: existUserTest, password: 'Pass123' })
                             .end((err, res) => {
                                 expect(res).to.have.status(400);
                                 expect(res).to.be.html;
@@ -256,16 +260,28 @@ describe('Login and Register:\n', () => {
                             });
                     });
                 });
-                describe('Registering with invalid username format', () => {
+                describe('Registering with invalid username format (including test username)', () => {
                     it('Error when username is shorter than 2 characters', (done) => {
                         chai
                             .request(app)
                             .post('/register')
-                            .send({ email: 'TestTest@test.test', username: 'H', password: '123abcDEF' })
+                            .send({ email: 'TestTest@test.test', username: 'H', password: 'existUser123' })
                             .end((err, res) => {
                                 expect(res).to.have.status(400);
                                 expect(res).to.be.html;
                                 expect(res.text).to.include('<div class="alert alert-danger"><p>Invalid format for username</p></div>');
+                                done();
+                            });
+                    });
+                    it('Error when username is equal to "newUserTest"', (done) => {
+                        chai
+                            .request(app)
+                            .post('/register')
+                            .send({ email: 'TestTest@test.test', username: newUserTest, password: 'existUser123' })
+                            .end((err, res) => {
+                                expect(res).to.have.status(400);
+                                expect(res).to.be.html;
+                                expect(res.text).to.include('<div class="alert alert-danger"><p>Please choose another username</p></div>');
                                 done();
                             });
                     });
@@ -285,7 +301,7 @@ describe('Login and Register:\n', () => {
                         chai
                             .request(app)
                             .post('/register')
-                            .send({ email: 'TestTest@test.test', username: 'Hi`~{}|:"', password: '123abcDEF' })
+                            .send({ email: 'TestTest@test.test', username: 'Hi`~{}|:"', password: 'existUser123' })
                             .end((err, res) => {
                                 expect(res).to.have.status(400);
                                 expect(res).to.be.html;
@@ -297,7 +313,7 @@ describe('Login and Register:\n', () => {
                         chai
                             .request(app)
                             .post('/register')
-                            .send({ email: 'TestTest@test.test', username: 'Hi<>?,./>', password: '123abcDEF' })
+                            .send({ email: 'TestTest@test.test', username: 'Hi<>?,./>', password: 'existUser123' })
                             .end((err, res) => {
                                 expect(res).to.have.status(400);
                                 expect(res).to.be.html;
@@ -306,18 +322,32 @@ describe('Login and Register:\n', () => {
                             });
                     });
                 });
-                describe('Registering with invalid email format', () => {
+                describe('Registering with invalid email format then registering with correct', () => {
                     it('Error when missing an @ sign', (done) => {
                         chai
                             .request(app)
                             .post('/register')
-                            .send({ email: 'notAValidEmail', username: 'someUsername', password: '123abcDEF' })
+                            .send({ email: 'notAValidEmail', username: existUserTest, password: 'existUser123' })
                             .end((err, res) => {
                                 expect(res).to.have.status(400);
                                 expect(res).to.be.html;
                                 expect(res.text).to.include('<div class="alert alert-danger"><p>Invalid format for email</p></div>');
                                 done();
                             });
+                    });
+                    it('Successfully registered account (should return 302)', (done) => {
+                        supertest(app)
+                            .post('/register')
+                            .send({ email: 'TestTest@test.test', username: existUserTest, password: 'existUser123' })
+                            .expect(302)
+                            .expect('set-cookie', /token=/)
+                            .end((err, res) => {
+                                if (err) throw err;
+                                redirectUrl = res.headers.location; // for the next test
+                                loginCookie = res.headers['set-cookie'];
+                                done();
+                            });
+        
                     });
                 });
             });

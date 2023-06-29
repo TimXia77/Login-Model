@@ -32,6 +32,12 @@ const registerPage = ["/", "/register"];
 const PORT = 3000;
 const swaggerDocument = YAML.load('./apiSpecification.yaml');
 
+//Data that is off limits (used for testing)
+const existingEmail = 'TestTest@test.test';
+const existingUsername = 'existUserTest';
+
+const newUsername = 'newUserTest';   
+
 const swaggerOptions = {
     swaggerDefinition: swaggerDocument,
     apis: ['./server.js'], // Update with your actual route files
@@ -58,6 +64,8 @@ app.post(registerPage, async (req, res) => {
     } else if (!(/[0-9]/.test(req.body.password) && /[A-Z]/.test(req.body.password) && /[a-z]/.test(req.body.password) && (req.body.password).length >= 8)) {
         return res.status(400).render('register-en', { msg: '<div class="alert alert-danger"><p>Invalid format for password</p></div>' });
 
+    } else if (newUsername == req.body.username){   //username for testing cannot be taken
+        return res.status(400).render('register-en', { msg: '<div class="alert alert-danger"><p>Please choose another username</p></div>' });
     }
 
     const dataArr = dataLayer.readUsers(); //array with user information

@@ -46,20 +46,20 @@ paths:
       description: Sends a request to login. To successfully login, an account with a matching username and password must be entered.
       requestBody:
         content:
-          application/json:     # Media type
-            schema:             # Request body contents
-              $ref: '#/components/schemas/newItem'   # Reference to an object
-            examples:    # Child of media type
-              Jessica:   # Example 1
+          application/json:    
+            schema:             
+              $ref:
+            examples:    
+              Logging in to existing account (302):   
                 value:
-                  id: 10
-                  name: Jessica Smith
-              Ron:       # Example 2
+                  username: existUserTest
+                  password: existUser123
+              Logging in to non-existing account (401):
                 value:
-                  id: 11
-                  name: Ron Stewart
+                  username: badUser
+                  password: badPass123
       responses:
-        '302':
+        '200':
           description: User request contained a username and password of an existing account.
           content:
             application/json:
@@ -69,13 +69,13 @@ paths:
                   username:
                     type: string
                     description: The user ID.
-                    example: existingUser
+                    example: existUserTest
                   password:
                     type: string
                     description: The user name.
-                    example: existingPass123
+                    example: existUser123
         '401':
-          description: Bad request (e.g. invalid username or password)
+          description: Bad request (e.g. incorrect username or password)
           content:
             application/json:
               schema:
@@ -178,7 +178,7 @@ paths:
                 properties:
                   email:
                     type: string
-                    description: user email.
+                    description: The user email.
                     example: emailWithNoAtSign
                   username:
                     type: string
@@ -189,17 +189,21 @@ paths:
                     description: The user name.
                     example: passWithNoNumber
         '401': #FINISH ME!
-          description: Bad request (e.g. invalid username or password)
+          description: Bad request (e.g. taken username or password)
           content:
             application/json:
               schema:
                 type: object
                 properties:
+                  email:
+                    type: string
+                    description: The user email.
+                    example: takenEmail@email.com
                   username:
                     type: string
                     description: The user ID.
-                    example: badUser
+                    example: takenUser
                   password:
                     type: string
                     description: The user name.
-                    example: badPass123
+                    example: takenPass123
