@@ -1,0 +1,1 @@
+{"email":"TestTest@test.test","username":"existUserTest","password":"$2b$10$HoC4H06nCHJNIofqaJaAXu6uAPjYltDbAbJ9rgJbn367r0hLr5Z/u","role":"basic"}
