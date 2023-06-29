@@ -1,14 +1,29 @@
 
 const fs = require("fs");
+const bcrypt = require("bcrypt");
 
-function readData() {
-    return fs.readFileSync('../accounts.txt', 'utf8');
+function readUsers() {
+    let data = fs.readFileSync('../accounts.txt', 'utf8');
+    return JSON.parse(`[${data}]`);
 }
 
-function addData(newData) {
-    if (readData().trim() == "") { //if first account added
+function findUser(targetUsername, targetPassword) {
+    const targetUser = readUsers().find(user => user.username === targetUsername);
 
-        fs.appendFile("../accounts.txt", newData, err => {
+    if (!(targetUser == null)){
+        if (bcrypt.compareSync(targetPassword, targetUser.password)){
+            return true;
+        }
+    } 
+    return false;
+}
+
+async function addUser(newEmail, newUsername, newPassword) {
+    const hashedPassword = await bcrypt.hash(newPassword, 10); //hashing salt is saved with the hashed password automatically
+    const newUser = JSON.stringify({ email: newEmail, username: newUsername, password: hashedPassword, role: "basic" });
+
+    if (fs.readFileSync('../accounts.txt', 'utf8').trim() == "") { //if first account added
+        fs.appendFile("../accounts.txt", newUser, err => {
             if (err) {
                 console.err;
                 return;
@@ -16,7 +31,7 @@ function addData(newData) {
         });
 
     } else {
-        let modifiedData = ", " + newData
+        let modifiedData = ", " + newUser;
         fs.appendFile("../accounts.txt", modifiedData, err => {
             if (err) {
                 console.err;
@@ -27,7 +42,7 @@ function addData(newData) {
     }
 }
 
-function writeData(dataString) {
+function writeData(dataString) { //helper
     fs.writeFile("../accounts.txt", dataString, err => {
         if (err) {
             console.error(err);
@@ -38,7 +53,7 @@ function writeData(dataString) {
 }
 
 function deleteUser(targetUsername) {
-    let accounts = JSON.parse(`[${readData()}]`);
+    let accounts = readUsers();
     for (let i = 0; i < accounts.length; i++) {
         if (accounts[i].username === targetUsername) {
             accounts.splice(i, 1);
@@ -51,20 +66,19 @@ function deleteUser(targetUsername) {
 }
 
 
-function clearData() {
-    fs.writeFile("../accounts.txt", '', err => {
-        if (err) {
-            console.error(err);
-            console.log("error occured when clearing login textfile");
-            return;
-        }
-    });
-}
+// function clearData() { //helper
+//     fs.writeFile("../accounts.txt", '', err => {
+//         if (err) {
+//             console.error(err);
+//             console.log("error occured when clearing login textfile");
+//             return;
+//         }
+//     });
+// }
 
 module.exports = {
-    addData,
-    readData,
-    writeData,
-    deleteUser,
-    clearData
+    addUser,
+    findUser,
+    readUsers,
+    deleteUser
 };

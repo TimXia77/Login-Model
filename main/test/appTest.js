@@ -53,7 +53,7 @@ describe('Login and Register:\n', () => {
             it('Successfully registered account (should return 302)', (done) => {
                 supertest(app)
                     .post('/register')
-                    .send({ email1: 'TestTest@test.test', username1: 'TestUsernameTest', password1: '123abcDEF' })
+                    .send({ email: 'TestTest@test.test', username: 'TestUsernameTest', password: '123abcDEF' })
                     .expect(302)
                     .expect('set-cookie', /token=/)
                     .end((err, res) => {
@@ -81,7 +81,7 @@ describe('Login and Register:\n', () => {
             it('Successfully logged in to account (should return 302)', (done) => {
                 supertest(app)
                     .post('/login')
-                    .send({ username1: 'TestUsernameTest', password1: '123abcDEF' })
+                    .send({ username: 'TestUsernameTest', password: '123abcDEF' })
                     .expect(302)
                     .expect('set-cookie', /token=/)
                     .end((err, res) => {
@@ -136,11 +136,11 @@ describe('Login and Register:\n', () => {
                 chai
                     .request(app)
                     .post('/login')
-                    .send({ username1: 'TestUsernameTestUsernameTest', password1: '123abcDEF' })
+                    .send({ username: 'TestUsernameTestUsernameTest', password: '123abcDEF' })
                     .end((err, res) => {
                         expect(res).to.have.status(401);
                         expect(res).to.be.html;
-                        expect(res.text).to.include('<div class="alert alert-danger"><p>Cannot find username</p></div>');
+                        expect(res.text).to.include('<div class="alert alert-danger"><p>Invalid password or username</p></div>');
                         done();
                     });
             });
@@ -148,52 +148,54 @@ describe('Login and Register:\n', () => {
                 chai
                     .request(app)
                     .post('/login')
-                    .send({ username1: 'TestUsernameTest', password1: 'badPassword' })
+                    .send({ username: 'TestUsernameTest', password: 'badPassword' })
                     .end((err, res) => {
                         expect(res).to.have.status(401);
                         expect(res).to.be.html;
-                        expect(res.text).to.include('<div class="alert alert-danger"><p>Invalid Password</p></div>');
+                        expect(res.text).to.include('<div class="alert alert-danger"><p>Invalid password or username</p></div>');
                         done();
                     });
             });
         });
         describe('POST /register', () => {
             //taken usernames and emails
-            it('Tried to register with taken username (should return 401)', (done) => {
-                chai
-                    .request(app)
-                    .post('/register')
-                    .send({ email1: 'timxiaa@gmail.com', username1: 'TestUsernameTest', password1: '123abcDEF' })
-                    .end((err, res) => {
-                        expect(res).to.have.status(401);
-                        expect(res).to.be.html;
-                        expect(res.text).to.include('<div class="alert alert-danger"><p>Username already taken</p></div>');
-                        done();
-                    });
-            });
-            it('Tried to register with taken email (should return 401)', (done) => {
-                chai
-                    .request(app)
-                    .post('/register')
-                    .send({ email1: 'TestTest@test.test', username1: 'TimXia7777', password1: '123abcDEF' })
-                    .end((err, res) => {
-                        expect(res).to.have.status(401);
-                        expect(res).to.be.html;
-                        expect(res.text).to.include('<div class="alert alert-danger"><p>Email already taken</p></div>');
-                        done();
-                    });
-            });
-            it('Tried to register with taken username and taken email (should return 401)', (done) => {
-                chai
-                    .request(app)
-                    .post('/register')
-                    .send({ email1: 'TestTest@test.test', username1: 'TestUsernameTest', password1: '123abcDEF' })
-                    .end((err, res) => {
-                        expect(res).to.have.status(401);
-                        expect(res).to.be.html;
-                        expect(res.text).to.include('<div class="alert alert-danger"><p>Username and email taken</p></div>');
-                        done();
-                    });
+            describe('Registering with taken information', () => {
+                it('Tried to register with taken username (should return 401)', (done) => {
+                    chai
+                        .request(app)
+                        .post('/register')
+                        .send({ email: 'timxiaa@gmail.com', username: 'TestUsernameTest', password: '123abcDEF' })
+                        .end((err, res) => {
+                            expect(res).to.have.status(401);
+                            expect(res).to.be.html;
+                            expect(res.text).to.include('<div class="alert alert-danger"><p>Username already taken</p></div>');
+                            done();
+                        });
+                });
+                it('Tried to register with taken email (should return 401)', (done) => {
+                    chai
+                        .request(app)
+                        .post('/register')
+                        .send({ email: 'TestTest@test.test', username: 'TimXia7777', password: '123abcDEF' })
+                        .end((err, res) => {
+                            expect(res).to.have.status(401);
+                            expect(res).to.be.html;
+                            expect(res.text).to.include('<div class="alert alert-danger"><p>Email already taken</p></div>');
+                            done();
+                        });
+                });
+                it('Tried to register with taken username and taken email (should return 401)', (done) => {
+                    chai
+                        .request(app)
+                        .post('/register')
+                        .send({ email: 'TestTest@test.test', username: 'TestUsernameTest', password: '123abcDEF' })
+                        .end((err, res) => {
+                            expect(res).to.have.status(401);
+                            expect(res).to.be.html;
+                            expect(res.text).to.include('<div class="alert alert-danger"><p>Username and email taken</p></div>');
+                            done();
+                        });
+                });
             });
 
             //invalid parameter formats
@@ -201,12 +203,15 @@ describe('Login and Register:\n', () => {
                 beforeEach(() => {
                     dataLayer.deleteUser('TestUsernameTest');
                 });
+                // after(() => {
+                //     dataLayer
+                // });
                 describe('Registering with invalid password formats', () => {
                     it('Error when missing a number', (done) => {
                         chai
                             .request(app)
                             .post('/register')
-                            .send({ email1: 'TestTest@test.test', username1: 'TestUsernameTest', password1: 'password' })
+                            .send({ email: 'TestTest@test.test', username: 'TestUsernameTest', password: 'password' })
                             .end((err, res) => {
                                 expect(res).to.have.status(400);
                                 expect(res).to.be.html;
@@ -218,7 +223,7 @@ describe('Login and Register:\n', () => {
                         chai
                             .request(app)
                             .post('/register')
-                            .send({ email1: 'TestTest@test.test', username1: 'TestUsernameTest', password1: 'password123' })
+                            .send({ email: 'TestTest@test.test', username: 'TestUsernameTest', password: 'password23' })
                             .end((err, res) => {
                                 expect(res).to.have.status(400);
                                 expect(res).to.be.html;
@@ -230,7 +235,7 @@ describe('Login and Register:\n', () => {
                         chai
                             .request(app)
                             .post('/register')
-                            .send({ email1: 'TestTest@test.test', username1: 'TestUsernameTest', password1: 'PASSWORD123' })
+                            .send({ email: 'TestTest@test.test', username: 'TestUsernameTest', password: 'password23' })
                             .end((err, res) => {
                                 expect(res).to.have.status(400);
                                 expect(res).to.be.html;
@@ -242,7 +247,7 @@ describe('Login and Register:\n', () => {
                         chai
                             .request(app)
                             .post('/register')
-                            .send({ email1: 'TestTest@test.test', username1: 'TestUsernameTest', password1: 'Pass123' })
+                            .send({ email: 'TestTest@test.test', username: 'TestUsernameTest', password: 'Pass123' })
                             .end((err, res) => {
                                 expect(res).to.have.status(400);
                                 expect(res).to.be.html;
@@ -256,7 +261,7 @@ describe('Login and Register:\n', () => {
                         chai
                             .request(app)
                             .post('/register')
-                            .send({ email1: 'TestTest@test.test', username1: 'H', password1: '123abcDEF' })
+                            .send({ email: 'TestTest@test.test', username: 'H', password: '123abcDEF' })
                             .end((err, res) => {
                                 expect(res).to.have.status(400);
                                 expect(res).to.be.html;
@@ -268,7 +273,7 @@ describe('Login and Register:\n', () => {
                         chai
                             .request(app)
                             .post('/register')
-                            .send({ email1: 'TestTest@test.test', username1: 'username!@#$%^&*()', password1: '123abcDEF' })
+                            .send({ email: 'TestTest@test.test', username: 'username!@#$%^&*()', password: '123abcDEF' })
                             .end((err, res) => {
                                 expect(res).to.have.status(400);
                                 expect(res).to.be.html;
@@ -280,7 +285,7 @@ describe('Login and Register:\n', () => {
                         chai
                             .request(app)
                             .post('/register')
-                            .send({ email1: 'TestTest@test.test', username1: 'Hi`~{}|:"', password1: '123abcDEF' })
+                            .send({ email: 'TestTest@test.test', username: 'Hi`~{}|:"', password: '123abcDEF' })
                             .end((err, res) => {
                                 expect(res).to.have.status(400);
                                 expect(res).to.be.html;
@@ -292,7 +297,7 @@ describe('Login and Register:\n', () => {
                         chai
                             .request(app)
                             .post('/register')
-                            .send({ email1: 'TestTest@test.test', username1: 'Hi<>?,./>', password1: '123abcDEF' })
+                            .send({ email: 'TestTest@test.test', username: 'Hi<>?,./>', password: '123abcDEF' })
                             .end((err, res) => {
                                 expect(res).to.have.status(400);
                                 expect(res).to.be.html;
@@ -306,7 +311,7 @@ describe('Login and Register:\n', () => {
                         chai
                             .request(app)
                             .post('/register')
-                            .send({ email1: 'notAValidEmail', username1: 'someUsername', password1: '123abcDEF' })
+                            .send({ email: 'notAValidEmail', username: 'someUsername', password: '123abcDEF' })
                             .end((err, res) => {
                                 expect(res).to.have.status(400);
                                 expect(res).to.be.html;

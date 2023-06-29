@@ -1,0 +1,205 @@
+openapi: 3.0.0
+info:
+  version: 1.0.0
+  title: 'Project #1 - Pendrive Inventory Management Software'
+  description: >-
+    >A pendrive inventory management app that requires users to create accounts. Users can then look through available pendrives and request what they would like. 
+    
+    >-
+    Focuses on using a RESTful api and Government of Canada's Web Experience Toolkit.
+    
+      >- To achieve the statelessness requirement of REST architecture, data will be stored as json strings in textfiles. The textfile that stores account information should not be accessable by users.
+    
+    >-
+    Basic accounts can only request pendrives. Admin accounts can also add pendrives to the available pool of products. 
+    
+    
+servers:
+  - description: The program runs locally on port 3000 by default.
+    url: http://localhost:3000/
+
+
+tags: 
+  - name: authentication
+    description: routes related to registration and authentication. These can only be accessed when the user is not logged in.
+    
+  - name: inventory
+    description: resources that navigate the inventory. These can only be accessed when the user is logged in.
+    
+  - name: profile
+    description: endpoints related to user profiles. These can only be accessed when the user is logged in.
+
+paths:
+  /login:
+    get: 
+      tags:
+        - authentication
+      summary: Login for users
+      description: Login page that only accepts accounts that were registered.
+      responses:
+        '200':
+          description: Loaded page successfully
+    post: 
+      tags:
+        - authentication
+      summary: Login request
+      description: Sends a request to login. To successfully login, an account with a matching username and password must be entered.
+      requestBody:
+        content:
+          application/json:     # Media type
+            schema:             # Request body contents
+              $ref: '#/components/schemas/newItem'   # Reference to an object
+            examples:    # Child of media type
+              Jessica:   # Example 1
+                value:
+                  id: 10
+                  name: Jessica Smith
+              Ron:       # Example 2
+                value:
+                  id: 11
+                  name: Ron Stewart
+      responses:
+        '302':
+          description: User request contained a username and password of an existing account.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    description: The user ID.
+                    example: existingUser
+                  password:
+                    type: string
+                    description: The user name.
+                    example: existingPass123
+        '401':
+          description: Bad request (e.g. invalid username or password)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    description: The user ID.
+                    example: badUser
+                  password:
+                    type: string
+                    description: The user name.
+                    example: badPass123
+  /logout:
+    post: 
+      tags:
+        - authentication
+      summary: Logout for users.
+      description: Sends a request to logout and ensures that the user's current json web token is no longer valid.
+      security:
+        - cookieAuth: []
+      responses:
+        '302':
+          description: User's JWT is now invalid. Redirects user to the logout page. Users have the options to go to the login or registry page.
+  /register:
+    get: 
+      tags:
+        - authentication
+      summary: Account Registry page.
+      description: Takes an email, username, and password to create a new acconts.
+      responses:
+        '200':
+          description: Loaded page successfully  
+    post: 
+      tags:
+        - authentication
+      summary: Account creation request
+      description: >-
+        >Sends a request with registry information (email, username, password) to create a new account with basic privileges.
+        
+        >-
+        Emails should contain an "@" sign.
+        
+        >-
+        Usernames must be 6-16 characters and alphanumeric.
+        
+        >-
+        Passwords must be 8-16 characters and contain at least one number, one uppercase letter, and one lowercase letter.
+      
+        >-
+        Usernames and emails must be unqiue. Passwords don't have to be unique.
+        
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema: 
+              type: object
+              properties:
+                email:
+                  type: string
+                username:
+                  type: string
+                password:
+                  type: string
+              example:
+                email: newEmail@email.com
+                username: newUser
+                password: goodPass123
+              required:
+                - email
+                - username
+                - password
+      responses:
+        '302':
+          description: User requested to create a new account that satisfied the requirements with a unique email and username.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                    description: user email.
+                    example: uniqueEmail@gmail.com
+                  username:
+                    type: string
+                    description: The user ID.
+                    example: unqiueUser
+                  password:
+                    type: string
+                    description: The user name.
+                    example: uniquePass123
+        '400':
+          description: information violates the restrictions (e.g. password does not have a lower case letter).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  email:
+                    type: string
+                    description: user email.
+                    example: emailWithNoAtSign
+                  username:
+                    type: string
+                    description: The user ID.
+                    example: usernameWith!Char
+                  password:
+                    type: string
+                    description: The user name.
+                    example: passWithNoNumber
+        '401': #FINISH ME!
+          description: Bad request (e.g. invalid username or password)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  username:
+                    type: string
+                    description: The user ID.
+                    example: badUser
+                  password:
+                    type: string
+                    description: The user name.
+                    example: badPass123
